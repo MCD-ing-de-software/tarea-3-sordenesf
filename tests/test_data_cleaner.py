@@ -88,6 +88,7 @@ class TestDataCleaner(unittest.TestCase):
         
         # Se verifica que no existan valores faltantes en el dataframe
         self.assertEqual(resultado.isna().sum().sum(), 0)
+        
         # Se verifica el nuevo dataframe tiene menos filas
         self.assertLess(len(resultado),len(df))
 
@@ -103,6 +104,8 @@ class TestDataCleaner(unittest.TestCase):
 
         df = make_sample_df()
         cleaner = DataCleaner()
+        
+        # Se verifica el lanzamiento de un KeyError
         with self.assertRaises(KeyError):
             cleaner.drop_invalid_rows(df,["does_not_exist"])
 
@@ -127,22 +130,28 @@ class TestDataCleaner(unittest.TestCase):
         "age": "float64",
         "city": "string"
         })
+        
+        # Copia del dataframe original
         df_original = df.copy()
        
         cleaner = DataCleaner()
 
         resultado = cleaner.trim_strings(df,["name"])
+        
         # Verificar que el dataframe original no fue modificado
-        self.assertEqual(df.iloc[0,0], " Alice ", "No se debió elimininar espacios del dataframe original")
+        self.assertEqual(df.iloc[0,0], " Alice ", 
+                         "No se debió elimininar espacios del dataframe original")
+        
+        # Adicionalmente, se verifica que el dataframe completo no fue modificado
+        pdt.assert_frame_equal(df, df_original, check_names=True)
         
         # Verificar que se han eliminado espacios
         self.assertEqual(resultado.iloc[0,0], "Alice", "Se debió elimininar espacios")
 
-        # Adicionalmente, se verifica que el dataframe completo no fue modificado
-        pdt.assert_frame_equal(df,df_original)
-        
         # Verificar que columnas no especificadas no cambian
-        pdt.assert_series_equal(resultado["city"], df["city"], "Columnas no especificadas no debieron cambiar")
+        pdt.assert_series_equal(resultado["city"], df["city"],
+                                 "Columnas no especificadas no debieron cambiar",
+                                 check_names=True)
 
 
     def test_trim_strings_raises_typeerror_for_non_string_column(self):
@@ -164,6 +173,8 @@ class TestDataCleaner(unittest.TestCase):
         })
         
         cleaner = DataCleaner()
+        
+        # Se verifica en lanzamiento de un TypeError
         with self.assertRaises(TypeError ):
             cleaner.trim_strings(df,["age"])
 
@@ -188,13 +199,14 @@ class TestDataCleaner(unittest.TestCase):
         })
         
         cleaner = DataCleaner()
+        
         # Factor de 0.5 según lo aclarado en foro del curso.
         resultado = cleaner.remove_outliers_iqr(df, "age", 0.5)
         
-        # Se verifica eliminación de 120 en la columna
+        # Se verifica eliminación del valor 120 en la columna
         self.assertNotIn(120.0, resultado["age"].values, "120 no debería estar en la columna")
 
-        # Se verifica que 35 siguen en la columna
+        # Se verifica que 35 sigue en la columna
         self.assertIn(35.0, resultado["age"].values, "35 debería estar en columna")
 
 
@@ -210,6 +222,8 @@ class TestDataCleaner(unittest.TestCase):
 
         df = make_sample_df()
         cleaner = DataCleaner()
+        
+        # Se verifica el lanzamiento de un KeyError
         with self.assertRaises(KeyError):
             cleaner.remove_outliers_iqr(df, "salary", 0.5)
 
@@ -232,6 +246,8 @@ class TestDataCleaner(unittest.TestCase):
         })
         
         cleaner = DataCleaner()
+        
+        # Se verifica el lanzamiento de un TypeError
         with self.assertRaises(TypeError):
             cleaner.remove_outliers_iqr(df, "city", 0.5)
 

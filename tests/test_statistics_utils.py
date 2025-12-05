@@ -81,11 +81,11 @@ class TestStatisticsUtils(unittest.TestCase):
 
         # Verificar valor de window no positivo
         with self.assertRaises(ValueError):
-            resultado = utils.moving_average(array, window=0)
+            utils.moving_average(array, window=0)
         
         # Verificar valor de window mayor que longitud del array
         with self.assertRaises(ValueError):
-            resultado = utils.moving_average(array, window=4)
+            utils.moving_average(array, window=4)
 
 
     def test_moving_average_only_accepts_1d_sequences(self):
@@ -100,9 +100,9 @@ class TestStatisticsUtils(unittest.TestCase):
         utils = StatisticsUtils()
         array = [[1, 2], [3, 4]]
 
-        # Verificar ValueError por soporte de secuencia 1D
+        # Verificar lanzamiento de ValueError por soporte de secuencia 1D
         with self.assertRaises(ValueError):
-            resultado = utils.moving_average(array, window=2)
+            utils.moving_average(array, window=2)
 
 
     def test_zscore_has_mean_zero_and_unit_std(self):
@@ -143,7 +143,7 @@ class TestStatisticsUtils(unittest.TestCase):
 
         # Verificar ValueError por desviación estándar igual a 0
         with self.assertRaises(ValueError):
-            resultado = utils.zscore(array)
+            utils.zscore(array)
 
     def test_min_max_scale_maps_to_zero_one_range(self):
         """Test que verifica que el método min_max_scale escala correctamente una secuencia
@@ -183,7 +183,7 @@ class TestStatisticsUtils(unittest.TestCase):
 
         # Verificar ValueError con secuencia de valores iguales
         with self.assertRaises(ValueError):
-            resultado = utils.min_max_scale(array)
+            utils.min_max_scale(array)
 
 if __name__ == "__main__":
     unittest.main()
